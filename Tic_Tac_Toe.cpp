@@ -6,19 +6,11 @@ Tic_Tac_Toe::Tic_Tac_Toe(QWidget *parent)
     ui.setupUi(this);
 
     messageBox = new QMessageBox;
-
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            board[i][j] = '_';
-            ui.tbl_grid->setItem(i, j, new QTableWidgetItem);
-            ui.tbl_grid->item(i, j)->setBackground(Qt::white);
-        }
-    }
     
-    computerTurn();
+    // Initialize board
+    onButtonResetClicked();
 
+    // Connect signals to functions (clicking on the reset button, and clicking in a cell)
     connect(ui.tbl_grid, &QTableWidget::cellClicked, this, &Tic_Tac_Toe::onCellClicked);
     connect(ui.btn_reset, &QPushButton::released, this, &Tic_Tac_Toe::onButtonResetClicked);
 }
@@ -46,9 +38,9 @@ int Tic_Tac_Toe::evaluate()
             board[row][1] == board[row][2])
         {
             if (board[row][0] == player)
-                return +10;
-            else if (board[row][0] == computer)
                 return -10;
+            else if (board[row][0] == computer)
+                return +10;
         }
     }
 
@@ -59,10 +51,10 @@ int Tic_Tac_Toe::evaluate()
             board[1][col] == board[2][col])
         {
             if (board[0][col] == player)
-                return +10;
+                return -10;
 
             else if (board[0][col] == computer)
-                return -10;
+                return +10;
         }
     }
 
@@ -70,17 +62,17 @@ int Tic_Tac_Toe::evaluate()
     if (board[0][0] == board[1][1] && board[1][1] == board[2][2])
     {
         if (board[0][0] == player)
-            return +10;
-        else if (board[0][0] == computer)
             return -10;
+        else if (board[0][0] == computer)
+            return +10;
     }
 
     if (board[0][2] == board[1][1] && board[1][1] == board[2][0])
     {
         if (board[0][2] == player)
-            return +10;
-        else if (board[0][2] == computer)
             return -10;
+        else if (board[0][2] == computer)
+            return +10;
     }
 
     // Else if none of them have won then return 0
@@ -109,6 +101,7 @@ int Tic_Tac_Toe::miniMax(int depth, bool isMax)
     // If this maximizer's move
     if (isMax)
     {
+        // Start with an awful score, any cell will have a better score than this.
         int best = -1000;
 
         // Traverse all cells
@@ -138,6 +131,7 @@ int Tic_Tac_Toe::miniMax(int depth, bool isMax)
     // If this minimizer's move
     else
     {
+        // Start with a great score, any cell will have a worse score than this.
         int best = 1000;
 
         // Traverse all cells
@@ -215,13 +209,13 @@ bool Tic_Tac_Toe::isGameEnd()
     int score = evaluate();
     if (score == 10)
     {
-        messageBox->setText("You won!");
+        messageBox->setText("The computer won... again.");
         messageBox->show();
         return true;
     }
     else if (score == -10)
     {
-        messageBox->setText("The computer won...");
+        messageBox->setText("You won! How did you manage to win!?!?!?");
         messageBox->show();
         return true;
     }
@@ -249,6 +243,7 @@ void Tic_Tac_Toe::onCellClicked(int row, int col)
         
     board[row][col] = player;
     ui.tbl_grid->item(row, col)->setBackground(Qt::blue);
+    ui.tbl_grid->item(row, col)->setSelected(false);
 
     if (isGameEnd())
         return;
@@ -268,9 +263,16 @@ void Tic_Tac_Toe::onButtonResetClicked()
         for (int j = 0; j < 3; j++)
         {
             board[i][j] = '_';
+
+            // If cell is null (first time start program), create it
+            if(!ui.tbl_grid->item(i, j))
+                ui.tbl_grid->setItem(i, j, new QTableWidgetItem);
+
             ui.tbl_grid->item(i, j)->setBackground(Qt::white);
         }
     }
+    // Computer (X) shall move first, then wait for user to select a cell
+    computerTurn();
 }
 
 
