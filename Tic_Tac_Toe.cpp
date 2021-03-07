@@ -16,9 +16,9 @@ Tic_Tac_Toe::Tic_Tac_Toe(QWidget *parent)
             ui.tbl_grid->item(i, j)->setBackground(Qt::white);
         }
     }
-
+    
     computerTurn();
-        
+
     connect(ui.tbl_grid, &QTableWidget::cellClicked, this, &Tic_Tac_Toe::onCellClicked);
     connect(ui.btn_reset, &QPushButton::released, this, &Tic_Tac_Toe::onButtonResetClicked);
 }
@@ -124,8 +124,8 @@ int Tic_Tac_Toe::miniMax(int depth, bool isMax)
 
                     // Call minimax recursively and choose
                     // the maximum value
-                    int value = miniMax(depth + 1, false);
-                    best = std::max(value, best);
+                    best = std::max(best,
+                        miniMax(depth + 1, !isMax));
 
                     // Undo the move
                     board[i][j] = '_';
@@ -153,8 +153,8 @@ int Tic_Tac_Toe::miniMax(int depth, bool isMax)
 
                     // Call minimax recursively and choose
                     // the minimum value
-                    int value = miniMax(depth + 1, true);
-                    best = std::min(value, best);
+                    best = std::min(best,
+                        miniMax(depth + 1, !isMax));
 
                     // Undo the move
                     board[i][j] = '_';
@@ -254,6 +254,7 @@ void Tic_Tac_Toe::onCellClicked(int row, int col)
         return;
 
     computerTurn();
+
 
     if (isGameEnd())
         return;
