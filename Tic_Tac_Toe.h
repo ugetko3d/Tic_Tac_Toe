@@ -22,6 +22,7 @@ private:
     int miniMax(int depth, bool isMax);
     bool isGameEnd();
     void computerTurn();
+    void resetBoard();
 
     struct Move
     {
@@ -34,6 +35,7 @@ private:
     char board[3][3];
     char player = 'o';
     char computer = 'x';
+    bool m_isFirst = false;
 
 
 private slots:

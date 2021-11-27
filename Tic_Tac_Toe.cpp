@@ -7,8 +7,8 @@ Tic_Tac_Toe::Tic_Tac_Toe(QWidget *parent)
 
     messageBox = new QMessageBox;
     
-    // Initialize board
-    onButtonResetClicked();
+    // Initialize the board
+    resetBoard();
 
     // Connect signals to functions (clicking on the reset button, and clicking in a cell)
     connect(ui.tbl_grid, &QTableWidget::cellClicked, this, &Tic_Tac_Toe::onCellClicked);
@@ -18,6 +18,17 @@ Tic_Tac_Toe::Tic_Tac_Toe(QWidget *parent)
 Tic_Tac_Toe::~Tic_Tac_Toe()
 {
     delete messageBox;
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            // Delete cells
+            QTableWidgetItem* cell = ui.tbl_grid->item(i, j);
+            if (cell)
+                delete cell;
+        }
+    }
 }
 
 bool Tic_Tac_Toe::isMovesLeft()
@@ -258,6 +269,18 @@ void Tic_Tac_Toe::onCellClicked(int row, int col)
 
 void Tic_Tac_Toe::onButtonResetClicked()
 {
+    // Initialise the board
+    resetBoard();
+
+    // Computer (X) shall move first if not user has specified that player shall move first
+    m_isFirst = ui.cb_goFirst->isChecked();
+
+    if (!m_isFirst)
+        computerTurn();
+}
+
+void Tic_Tac_Toe::resetBoard()
+{
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -265,14 +288,12 @@ void Tic_Tac_Toe::onButtonResetClicked()
             board[i][j] = '_';
 
             // If cell is null (first time start program), create it
-            if(!ui.tbl_grid->item(i, j))
+            if (!ui.tbl_grid->item(i, j))
                 ui.tbl_grid->setItem(i, j, new QTableWidgetItem);
 
             ui.tbl_grid->item(i, j)->setBackground(Qt::white);
         }
     }
-    // Computer (X) shall move first, then wait for user to select a cell
-    computerTurn();
 }
 
 
